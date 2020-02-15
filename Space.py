@@ -1,57 +1,5 @@
 from tkinter import *
 import math
-from Space import *
-
-root = Tk()
-root.title = "Game"
-
-canvas = Canvas(root, width=1200, height=800, bg = "black")
-canvas.grid(column = 2, row = 0, rowspan=3)
-
-class Body:
-    def __init__(self, canvas, color, x, y, vx, vy, size, num, space = None):
-        self.num = num
-        self.canvas = canvas
-        self.id = canvas.create_oval(x-size/2, y-size/2, x+size/2, y+size/2, fill=color)
-        self.color = color
-        self.selected = False
-        self.x = x
-        self.y = y
-        self.vx, self.vy = vx, vy
-        self.size = size
-        self.mass =  4/3*math.pi*size**3
-        self.space = space
-        self.lineID = self.canvas.create_line(self.x,self.y,self.x+10*self.vx,self.y+10*self.vy)
-
-    def __repr__(self):
-        return str(self.num)
-
-    def force(self,other):
-        force = self.space.G*self.mass*other.mass/((self.x-other.x)**2+(self.y-other.y)**2)**0.5
-        angle = math.atan2(other.y-self.y,other.x-self.x)
-        fx = force*math.cos(angle)
-        fy = force*math.sin(angle)
-        return fx,fy
-
-    def move(self):
-        ax,ay = 0,0
-        for body in self.space.bodies:
-            if body.num != self.num:
-                fx,fy = self.force(body)
-                ax = fx/self.size
-                ay = fy/self.size
-        self.vx += ax
-        self.vy += ay
-        self.x += self.vx
-        self.y += self.vy
-        dx = self.x-(self.canvas.coords(self.id)[0]+self.canvas.coords(self.id)[2])/2
-        dy = self.y-(self.canvas.coords(self.id)[1]+self.canvas.coords(self.id)[3])/2
-        self.canvas.move(self.id, dx, dy)
-    
-    def vectors(self):
-        self.canvas.delete(self.lineID)
-        self.lineID = self.canvas.create_line(self.x,self.y,self.x+10*self.vx,
-                                              self.y+10*self.vy, fill = "white")
 
 class Space:
     def __init__(self, root, canvas, color = "black", scale = 1, bodies = []):
@@ -72,17 +20,16 @@ class Space:
         self.playButton = Button(self.root, textvariable = self.buttonText, width = 10,
                              bg = "grey", command = self.canvas_pause)
         self.buttonText.set("Play")
-        self.playButton.grid(column=0, row = 0, columnspan = 2)
+        self.playButton.grid(column=0,row = 0)
 
-        label = Label(root, text = "Mass: ")
-        label.grid(column = 0, row = 1)
-
-        self.massField = Entry(self.root, text = "")
-        self.massField.grid(column=1, row = 1)
+        self.fieldText = StringVar()
+        self.massField = Entry(self.root, textvariable = self.fieldText)
+        self.fieldText.set("Mass:")
+        self.massField.grid(column=0,row = 1)
 
         self.submitButton = Button(self.root, text = "Submit", width = 10,
                              bg = "grey", command = self.alterSize)
-        self.submitButton.grid(column=0,row = 2, columnspan = 2)
+        self.submitButton.grid(column=0,row = 2)
 
     
     def moveBodies(self):
@@ -129,21 +76,15 @@ class Space:
     
     def alterSize(self):
         if self.selectedBody != None:
-            print(self.massField.get)
-            self.selectedBody.size = int(self.massField.get())
+            self.selectedBody.size = massField.get()
             self.canvas.delete(self.selectedBody.id)
             self.selectedBody.id = self.canvas.create_oval(self.selectedBody.x-self.selectedBody.size,
                                    self.selectedBody.y-self.selectedBody.size, 
                                    self.selectedBody.x+self.selectedBody.size,
                                    self.selectedBody.y+self.selectedBody.size,
                                    color = self.color)
-            self.massField.delete(0, 'end') 
+        self.massField.delete(0, 'end') 
 
     def canvas_pause(self):
         self.pause *= -1
         self.buttonText.set(["Pause","Play"][int((self.pause+1)/2)])
-
-
-space = Space(root, canvas, "red")
-space.moveBodies()  #Changed per Bryan Oakley's comment.
-root.mainloop()
