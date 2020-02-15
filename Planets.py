@@ -101,13 +101,14 @@ class Space:
 
     def clickOnObject(self, event):
         for body in self.bodies:
-            if (((event.x-body.x)**2+(event.y-body.y)**2)**0.5 < body.size):
+            if (((event.x-body.x)**2+(event.y-body.y)**2)**0.5 < body.size/2):
                 return body
         return None
 
     def canvas_onclick(self, event):
         check = self.clickOnObject(event)
         if check != None:
+            if self.selectedBody == check: self.selectedBody = None
             check.selected = not check.selected
             for body in self.bodies:
                 if body.num != check.num: body.selected = False
@@ -132,11 +133,11 @@ class Space:
             print(self.massField.get)
             self.selectedBody.size = int(self.massField.get())
             self.canvas.delete(self.selectedBody.id)
-            self.selectedBody.id = self.canvas.create_oval(self.selectedBody.x-self.selectedBody.size,
-                                   self.selectedBody.y-self.selectedBody.size, 
-                                   self.selectedBody.x+self.selectedBody.size,
-                                   self.selectedBody.y+self.selectedBody.size,
-                                   color = self.color)
+            self.selectedBody.id = self.canvas.create_oval(self.selectedBody.x-self.selectedBody.size/2,
+                                   self.selectedBody.y-self.selectedBody.size/2, 
+                                   self.selectedBody.x+self.selectedBody.size/2,
+                                   self.selectedBody.y+self.selectedBody.size/2,
+                                   fill = self.selectedBody.color)
             self.massField.delete(0, 'end') 
 
     def canvas_pause(self):
