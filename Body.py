@@ -45,5 +45,6 @@ class Body:
         self.canvas.delete(self.lineID)
         self.lineID = self.canvas.create_line(self.x,self.y,self.x+10*self.vx,
                                               self.y+10*self.vy, fill = "white")
+    
     def updateMass(self):
         self.mass = 4/3*math.pi*self.size**3
