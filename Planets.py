@@ -2,6 +2,8 @@ from tkinter import *
 import math
 import itertools
 from Body import *
+import tkinter.font
+from PIL import Image, ImageTk
 
 root = Tk()
 root.title = "Game"
@@ -9,6 +11,12 @@ root.title = "Game"
 canvas = Canvas(root, width=1200, height=800, bg = "black")
 canvas.grid(column = 2, row = 0, rowspan=20)
 
+#earth = Image.open("Earth.png")
+#earth = earth.resize((100, 100), Image.ANTIALIAS)
+#photo = ImageTk.PhotoImage(earth)
+#label = Label(root, image = photo)
+#label.image = earth
+#label.grid(column = 0, row = 2, rowspan = 2, columnspan = 2)
 
 class Space:
     def __init__(self, root, canvas, color = "black", scale = 1, bodies = []):
