@@ -30,9 +30,9 @@ class Body:
         dpos = body2.position - body1.position
         sign = body1.charge * body2.charge
 
-        force_mag = space.G*body1.mass*body2.mass/np.linalg.norm(dpos)
-        body1.force -= dpos/np.linalg.norm(dpos)*force_mag*sign
-        body2.force += dpos/np.linalg.norm(dpos)*force_mag*sign
+        force = (dpos/np.linalg.norm(dpos)**3)*space.G*body1.mass*body2.mass
+        body1.force -= force*sign
+        body2.force += force*sign
 
     def move(self):
         acc = self.force/self.mass

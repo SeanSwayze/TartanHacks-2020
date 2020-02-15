@@ -15,7 +15,7 @@ class Space:
     def __init__(self, root, canvas, color = "black", scale = 1, bodies = []):
         self.canvas = canvas
         self.root = root
-        self.G = 0.001
+        self.G = 0.25
         self.color = color
         self.scale = scale
         self.bodies = bodies
@@ -62,7 +62,7 @@ class Space:
         check = self.clickOnObject(event)
         if self.selectedBody == None:
             if check == None:
-                body = Body(self.canvas, 1, event.x, event.y, 
+                body = Body(self.canvas, 1, event.x, event.y,
                         0, 0, 10, len(self.bodies), self)
                 if self.selectedBody != None:
                     self.selectedBody = None
