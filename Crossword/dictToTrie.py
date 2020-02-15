@@ -1,66 +1,49 @@
-#from fileToWordList import *
-#from node import *
-import string
-lower = string.ascii_lowercase
-
-
-dictionary = ["a","ba","bad","abad","ad","caba","add","cad"]
-
-
-class Node: 
-    def __init__(self, parent, letter, depth, word, height = 0):
-        self.parent = parent
-        self.letter = letter
-        self.depth = depth
-        self.word = word
-        self.pointers = [None for x in range(26)]
-        self.height = height
-
-    def __repr__(self):
-        return f"{self.letter},{self.word},{self.pointers}"
+from nodeClass import *
+from index import index
 
 #Converts a trie into a list of words
-def trieToList(root,string = ""):
-    if root.word: strings = [string+root.letter]
+def trieToList(root, string = ""):
+    if root._word: strings = [string+root._letter]
     else: strings = []
-    for node in root.pointers:
+    for node in root._pointers:
         if node != None:
-            result = trieToList(node,string = string+root.letter)
+            result = trieToList(node,string = string+root._letter)
             strings += result
     return strings
 
 #Creates a new trie with every word in a given dictionary, returns root
 def listToTrie(dictionary):
-    def getHeight(node): return node.height
     root = Node(None,"",0,False)
     for word in dictionary:
         newNode = root
         depth = 0
         for char in word:
             depth += 1
-            if newNode.pointers[lower.index(char)] == None:
-                newNode.pointers[lower.index(char)] = Node(newNode,char,depth,False)
-                newNode = newNode.pointers[lower.index(char)]
-                testNode = newNode.parent
+            if newNode._pointers[index(char)] == None:
+                newNode._pointers[index(char)] = Node(newNode,char,depth,False)
+                newNode = newNode._pointers[index(char)]
+                testNode = newNode._parent
                 while testNode != root:
-                    testNode.height = 0
-                    for node in testNode.pointers:
+                    testNode._height = testNode._height
+                    for node in testNode._pointers:
                         if node != None: 
-                            testNode.height = max(testNode.height,node.height)
-                    testNode = testNode.parent
+                            if node._height+1 > testNode._height:
+                                testNode._height = node._height+1
+                                testNode._maxLength += 1
+                    testNode = testNode._parent
             else:
-                newNode = newNode.pointers[lower.index(char)]
-        newNode.word = True
+                newNode = newNode._pointers[index(char)]
+        newNode._word = True
     return root
 
 #Determines whether a word is in the trie, returns boolean
 def wordInTrie(word,node):
     for char in word:
-        if node.pointers[lower.index(char)] != None:
-            node = node.pointers[lower.index(char)]
+        if node._pointers[index(char)] != None:
+            node = node._pointers[index(char)]
         else:
             return False
-    return node.word
+    return node._word
 
 #Returns a list of the number of words of each length
 def findLens(dictionary):
@@ -68,9 +51,11 @@ def findLens(dictionary):
     for word in dictionary: lengths[len(word)-1] += 1
     return lengths
 
+def testing():
+    dictionary = ["ab","b","acd"]
+    root = listToTrie(dictionary)
+    print(root)
+    print(root._pointers[0]._pointers[1]._depth, root._pointers[0]._pointers[1]._height, root._pointers[0]._pointers[1]._maxLength)
 
-root = listToTrie(dictionary)
-words = trieToList(root)
 
-print(words)
-print(findLens(words))
+testing()
