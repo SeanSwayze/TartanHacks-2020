@@ -82,17 +82,15 @@ class Space:
                 body = Body(self.canvas, 1, event.x, event.y, 
                         0, 0, 10, len(self.bodies), self)
                 if self.selectedBody != None:
-                    self.selectedBody.set_color()
                     self.selectedBody = None
                 self.bodies.append(body)
             else:
                 self.selectedBody = check
                 self.selectedBody.selected = True
-                self.canvas.itemconfig(self.selectedBody.id,fill = "green")
+                self.canvas.itemconfig(self.selectedBody.id,outline = "white")
         else:
-            self.canvas.itemconfig(self.selectedBody.id,fill = "green")
             if self.selectedBody == check:
-                self.selectedBody.set_color()
+                self.canvas.itemconfig(self.selectedBody.id,outline = "")
                 self.selectedBody.selected = False
                 self.selectedBody = None
             else:
@@ -115,7 +113,9 @@ class Space:
                                    self.selectedBody.position[1]-self.selectedBody.size/2, 
                                    self.selectedBody.position[0]+self.selectedBody.size/2,
                                    self.selectedBody.position[1]+self.selectedBody.size/2)
-            self.canvas.itemconfig(self.selectedBody.id,fill = "green")
+            self.canvas.itemconfig(self.selectedBody.id,outline = "white")
+            self.selectedBody.set_color()
+            self.selectedBody.vectors()
             self.selectedBody.updateMass()
             self.massField.delete(0, 'end') 
 
