@@ -6,7 +6,7 @@ root = Tk()
 root.title = "Game"
 
 canvas = Canvas(root, width=1200, height=800, bg = "black")
-canvas.grid(column = 2, row = 0, rowspan=3)
+canvas.grid(column = 2, row = 0, rowspan=20)
 
 class Body:
     def __init__(self, canvas, color, x, y, vx, vy, size, num, space = None):
@@ -19,7 +19,7 @@ class Body:
         self.y = y
         self.vx, self.vy = vx, vy
         self.size = size
-        self.mass =  4/3*math.pi*size**3
+        self.mass = 4/3*math.pi*size**3
         self.space = space
         self.lineID = self.canvas.create_line(self.x,self.y,self.x+10*self.vx,self.y+10*self.vy)
 
@@ -52,6 +52,9 @@ class Body:
         self.canvas.delete(self.lineID)
         self.lineID = self.canvas.create_line(self.x,self.y,self.x+10*self.vx,
                                               self.y+10*self.vy, fill = "white")
+    def updateMass(self):
+        self.mass = 4/3*math.pi*size**3
+
 
 class Space:
     def __init__(self, root, canvas, color = "black", scale = 1, bodies = []):
@@ -72,17 +75,17 @@ class Space:
         self.playButton = Button(self.root, textvariable = self.buttonText, width = 10,
                              bg = "grey", command = self.canvas_pause)
         self.buttonText.set("Play")
-        self.playButton.grid(column=0, row = 0, columnspan = 2)
+        self.playButton.grid(column=0, row = 9, columnspan = 2)
 
         label = Label(root, text = "Mass: ")
-        label.grid(column = 0, row = 1)
+        label.grid(column = 0, row = 15)
 
         self.massField = Entry(self.root, text = "")
-        self.massField.grid(column=1, row = 1)
+        self.massField.grid(column=1, row = 15)
 
         self.submitButton = Button(self.root, text = "Submit", width = 10,
                              bg = "grey", command = self.alterSize)
-        self.submitButton.grid(column=0,row = 2, columnspan = 2)
+        self.submitButton.grid(column=0,row = 16, columnspan = 2)
 
     
     def moveBodies(self):
@@ -138,6 +141,7 @@ class Space:
                                    self.selectedBody.x+self.selectedBody.size/2,
                                    self.selectedBody.y+self.selectedBody.size/2,
                                    fill = self.selectedBody.color)
+            self.selectedBody.updateMass()
             self.massField.delete(0, 'end') 
 
     def canvas_pause(self):
