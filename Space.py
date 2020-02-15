@@ -1,12 +1,5 @@
 from tkinter import *
 import math
-from Body import *
-
-root = Tk()
-root.title = "Game"
-
-canvas = Canvas(root, width=1200, height=800, bg = "black")
-canvas.grid(column = 2, row = 0, rowspan=3)
 
 class Space:
     def __init__(self, root, canvas, color = "black", scale = 1, bodies = []):
@@ -27,17 +20,16 @@ class Space:
         self.playButton = Button(self.root, textvariable = self.buttonText, width = 10,
                              bg = "grey", command = self.canvas_pause)
         self.buttonText.set("Play")
-        self.playButton.grid(column=0, row = 0, columnspan = 2)
+        self.playButton.grid(column=0,row = 0)
 
-        label = Label(root, text = "Mass: ")
-        label.grid(column = 0, row = 1)
-
-        self.massField = Entry(self.root, text = "")
-        self.massField.grid(column=1, row = 1)
+        self.fieldText = StringVar()
+        self.massField = Entry(self.root, textvariable = self.fieldText)
+        self.fieldText.set("Mass:")
+        self.massField.grid(column=0,row = 1)
 
         self.submitButton = Button(self.root, text = "Submit", width = 10,
                              bg = "grey", command = self.alterSize)
-        self.submitButton.grid(column=0,row = 2, columnspan = 2)
+        self.submitButton.grid(column=0,row = 2)
 
     
     def moveBodies(self):
@@ -56,14 +48,13 @@ class Space:
 
     def clickOnObject(self, event):
         for body in self.bodies:
-            if (((event.x-body.x)**2+(event.y-body.y)**2)**0.5 < body.size/2):
+            if (((event.x-body.x)**2+(event.y-body.y)**2)**0.5 < body.size):
                 return body
         return None
 
     def canvas_onclick(self, event):
         check = self.clickOnObject(event)
         if check != None:
-            if self.selectedBody == check: self.selectedBody = None
             check.selected = not check.selected
             for body in self.bodies:
                 if body.num != check.num: body.selected = False
@@ -85,21 +76,15 @@ class Space:
     
     def alterSize(self):
         if self.selectedBody != None:
-            print(self.massField.get)
-            self.selectedBody.size = int(self.massField.get())
+            self.selectedBody.size = massField.get()
             self.canvas.delete(self.selectedBody.id)
-            self.selectedBody.id = self.canvas.create_oval(self.selectedBody.x-self.selectedBody.size/2,
-                                   self.selectedBody.y-self.selectedBody.size/2, 
-                                   self.selectedBody.x+self.selectedBody.size/2,
-                                   self.selectedBody.y+self.selectedBody.size/2,
-                                   fill = self.selectedBody.color)
-            self.massField.delete(0, 'end') 
+            self.selectedBody.id = self.canvas.create_oval(self.selectedBody.x-self.selectedBody.size,
+                                   self.selectedBody.y-self.selectedBody.size, 
+                                   self.selectedBody.x+self.selectedBody.size,
+                                   self.selectedBody.y+self.selectedBody.size,
+                                   color = self.color)
+        self.massField.delete(0, 'end') 
 
     def canvas_pause(self):
         self.pause *= -1
         self.buttonText.set(["Pause","Play"][int((self.pause+1)/2)])
-
-
-space = Space(root, canvas, "red")
-space.moveBodies()  #Changed per Bryan Oakley's comment.
-root.mainloop()
