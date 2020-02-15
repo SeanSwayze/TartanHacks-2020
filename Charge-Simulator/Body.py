@@ -34,6 +34,9 @@ class Body:
         body1.force -= force*sign
         body2.force += force*sign
 
+    def contains(self, pos):
+        return np.linalg.norm(self.position - pos) < self.size/2
+
     def move(self):
         acc = self.force/self.mass
         self.velocity += acc
@@ -42,14 +45,22 @@ class Body:
         self.canvas.move(self.id, self.velocity[0], self.velocity[1])
         self.force = np.array([0.0, 0.0])
     
-    def vectors(self):
+    def update_vector(self):
         self.canvas.delete(self.lineID)
         self.lineID = self.canvas.create_line(self.position[0],self.position[1],self.position[0]+10*self.velocity[0],
                                               self.position[1]+10*self.velocity[1], fill = "white")
 
-    def set_color(self):
+    def update_shape(self, flipCharge=False, size=None):
+        if flipCharge:
+            self.charge *= -1
+        if size != None:
+            self.size = size
+            self.mass = 4/3*math.pi*(size/2)**3
+
+            self.canvas.delete(self.id)
+            self.id = self.canvas.create_oval(self.position[0]-self.size/2,
+                                            self.position[1]-self.size/2, 
+                                            self.position[0]+self.size/2,
+                                            self.position[1]+self.size/2)
         color = "red" if self.charge == 1 else "blue"
         self.canvas.itemconfig(self.id, fill = color)
-
-    def updateMass(self):
-        self.mass = 4/3*math.pi*self.size**3

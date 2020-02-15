@@ -12,13 +12,14 @@ canvas = Canvas(root, width=1200, height=800, bg = "black")
 canvas.grid(column = 2, row = 0, rowspan=20)
 
 class Space:
-    def __init__(self, root, canvas, color = "black", scale = 1, bodies = []):
+    def __init__(self, root, canvas, scale = 1, bodies = []):
+        self.G = 0.25
+
         self.canvas = canvas
         self.root = root
-        self.G = 0.25
-        self.color = color
         self.scale = scale
         self.bodies = bodies
+
         self.pause = 1
         self.selectedBody = None
         self.canvas.focus_set()
@@ -38,14 +39,12 @@ class Space:
         #print(self.pause)
         if not self.pause == -1:
             return
-
         bodies_pairs = list(itertools.combinations(self.bodies, 2))
         for pair in bodies_pairs:
             Body.pair_force(pair, self)
-
         for body in self.bodies:
             body.move()
-            body.vectors()
+            body.update_vector()
 
     def loop(self):
         #print(self.pause)
@@ -54,7 +53,7 @@ class Space:
 
     def clickOnObject(self, event):
         for body in self.bodies:
-            if (((event.x-body.position[0])**2+(event.y-body.position[1])**2)**0.5 < body.size/2):
+            if body.contains(np.array([event.x, event.y])):
                 return body
         return None
 
@@ -79,42 +78,31 @@ class Space:
             else:
                 dx,dy = (event.x - self.selectedBody.position[0]),(event.y - self.selectedBody.position[1])
                 self.selectedBody.velocity = [dx/10, dy/10]
-                self.selectedBody.vectors()
+                self.selectedBody.update_vector()
             
     def canvas_onrightclick(self, event):
         check = self.clickOnObject(event)
         if self.selectedBody == None:
             if check != None:
-                check.charge *= -1
-                check.set_color()
+                check.update_shape(flipCharge=True)
         else:
             if self.selectedBody == check:
-                check.charge *= -1
-                check.set_color()
+                check.update_shape(flipCharge=True)
             else:
                 self.selectedBody.velocity = [0, 0]
-                self.selectedBody.vectors()
+                self.selectedBody.update_vector()
 
     def canvas_onmousewheel(self, event):
         if self.selectedBody != None:
-            self.selectedBody.size += event.delta/10
-            self.selectedBody.size = max(10, self.selectedBody.size)
-            self.selectedBody.updateMass()
-
-            self.canvas.delete(self.selectedBody.id)
-            self.selectedBody.id = self.canvas.create_oval(self.selectedBody.position[0]-self.selectedBody.size/2,
-                                   self.selectedBody.position[1]-self.selectedBody.size/2, 
-                                   self.selectedBody.position[0]+self.selectedBody.size/2,
-                                   self.selectedBody.position[1]+self.selectedBody.size/2)
+            self.selectedBody.update_shape(size=max(10, self.selectedBody.size + event.delta/10))
             self.canvas.itemconfig(self.selectedBody.id,outline = "white")
-            self.selectedBody.set_color()
-            self.selectedBody.vectors()            
+            self.selectedBody.update_vector()
 
     def canvas_pause(self):
         self.pause *= -1
         self.buttonText.set(["Pause","Play"][int((self.pause+1)/2)])
 
 
-space = Space(root, canvas, "red")
+space = Space(root, canvas)
 space.loop()
 root.mainloop()
