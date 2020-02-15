@@ -31,6 +31,7 @@ class Space:
         self.canvas.focus_set()
         self.canvas.bind("<Button-1>", self.canvas_onleftclick)
         self.canvas.bind("<Button-3>", self.canvas_onrightclick)
+        self.canvas.bind("<MouseWheel>", self.canvas_onmousewheel)
         self.centerX = 0
         self.centerY = 0
         
@@ -39,16 +40,6 @@ class Space:
                              bg = "grey", command = self.canvas_pause)
         self.buttonText.set("Play")
         self.playButton.grid(column=0, row = 9, columnspan = 2)
-
-        label = Label(root, text = "Mass: ")
-        label.grid(column = 0, row = 15)
-
-        self.massField = Entry(self.root, text = "")
-        self.massField.grid(column=1, row = 15)
-
-        self.submitButton = Button(self.root, text = "Submit", width = 10,
-                             bg = "grey", command = self.alterSize)
-        self.submitButton.grid(column=0,row = 16, columnspan = 2)
 
     
     def moveBodies(self):
@@ -100,14 +91,26 @@ class Space:
             
     def canvas_onrightclick(self, event):
         check = self.clickOnObject(event)
-        if check != None:
-            check.charge *= -1
-            check.set_color()
+        if self.selectedBody == None:
+            if check != None:
+                check.charge *= -1
+                check.set_color()
+        else:
+            if self.selectedBody == check:
+                check.charge *= -1
+                check.set_color()
+            else:
+                self.selectedBody.velocity = [0, 0]
+                self.selectedBody.vectors()
 
-    def alterSize(self):
+
+
+    def canvas_onmousewheel(self, event):
         if self.selectedBody != None:
-            print(self.massField.get)
-            self.selectedBody.size = int(self.massField.get())
+            self.selectedBody.size += event.delta/10
+            self.selectedBody.size = max(10, self.selectedBody.size)
+            self.selectedBody.updateMass()
+
             self.canvas.delete(self.selectedBody.id)
             self.selectedBody.id = self.canvas.create_oval(self.selectedBody.position[0]-self.selectedBody.size/2,
                                    self.selectedBody.position[1]-self.selectedBody.size/2, 
@@ -115,9 +118,7 @@ class Space:
                                    self.selectedBody.position[1]+self.selectedBody.size/2)
             self.canvas.itemconfig(self.selectedBody.id,outline = "white")
             self.selectedBody.set_color()
-            self.selectedBody.vectors()
-            self.selectedBody.updateMass()
-            self.massField.delete(0, 'end') 
+            self.selectedBody.vectors()            
 
     def canvas_pause(self):
         self.pause *= -1
