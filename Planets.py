@@ -1,6 +1,5 @@
 from tkinter import *
 import math
-from Space import *
 
 root = Tk()
 root.title = "Game"
@@ -150,5 +149,5 @@ class Space:
 
 
 space = Space(root, canvas, "red")
-space.moveBodies()  #Changed per Bryan Oakley's comment.
+space.moveBodies()  
 root.mainloop()
