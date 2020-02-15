@@ -12,7 +12,7 @@ class Body:
         self.y = y
         self.vx, self.vy = vx, vy
         self.size = size
-        self.mass =  4/3*math.pi*size**3
+        self.mass = 4/3*math.pi*size**3
         self.space = space
         self.lineID = self.canvas.create_line(self.x,self.y,self.x+10*self.vx,self.y+10*self.vy)
 
@@ -45,3 +45,5 @@ class Body:
         self.canvas.delete(self.lineID)
         self.lineID = self.canvas.create_line(self.x,self.y,self.x+10*self.vx,
                                               self.y+10*self.vy, fill = "white")
+    def updateMass(self):
+        self.mass = 4/3*math.pi*self.size**3
