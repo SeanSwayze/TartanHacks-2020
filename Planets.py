@@ -4,7 +4,7 @@ import math
 root = Tk()
 root.title = "Game"
 
-canvas = Canvas(root, width=1200, height=800, bg = "white")
+canvas = Canvas(root, width=1200, height=800, bg = "black")
 canvas.grid(column = 1, row = 0, columnspan=3)
 
 class Body:
@@ -14,7 +14,6 @@ class Body:
         self.id = canvas.create_oval(x-size/2, y-size/2, x+size/2, y+size/2, fill=color)
         self.color = color
         self.selected = False
-        self.canvas.itemconfig(self.canvas.bg = self.color)
         self.x = x
         self.y = y
         self.vx, self.vy = vx, vy
@@ -50,7 +49,8 @@ class Body:
     
     def vectors(self):
         self.canvas.delete(self.lineID)
-        self.lineID = self.canvas.create_line(self.x,self.y,self.x+10*self.vx,self.y+10*self.vy)
+        self.lineID = self.canvas.create_line(self.x,self.y,self.x+10*self.vx,
+                                              self.y+10*self.vy, fill = "white")
 
 class Space:
     def __init__(self, canvas, color = "black", scale = 1, bodies = []):
